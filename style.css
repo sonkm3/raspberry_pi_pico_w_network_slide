@@ -1,0 +1,10 @@
+h2 {
+    line-style: solid !important;
+    line-style-type: disc !important;
+}
+
+.shiki {
+    border: solid !important;
+    border-color: darkgrey !important;
+    max-height: 350px !important;
+}

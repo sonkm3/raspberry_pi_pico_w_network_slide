@@ -209,17 +209,21 @@ timer = machine.Timer()
 timer.init(freq=2.5, mode=machine.Timer.PERIODIC, callback=lambda _: led.toggle())
 ```
 
+---
+
 ## 内蔵の温度センサの値を測ってみましょう
 
-- 以下の計算をすることでCPUの温度が求められます(RP2040のデータシートに記載があります)
+- RP2040内蔵の温度計は5つ目のADコンバーターに接続されています
+- 以下の計算をすることでCPUの温度が求められます
   - `T = 27 - (ADC_voltage - 0.706)/0.001721`
+- RP2040のデータシート566ページめに記載があります
   - https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf
 
-```
+```python
 import machine
 import time
 
-temp_adc = machine.ADC(4)
+temp_adc = machine.ADC(4) # RP2040内蔵の温度計は5つ目のADコンバーターに接続されています
 
 def get_temperature():
     v = (3.3/65535) * temp_adc.read_u16()
@@ -252,9 +256,11 @@ wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
 wlan.connect('SSID', 'password')
 
-while not (wlan.isconnected() and wlan.status() == network.STAT_GOT_IP):
-   print('Waiting to connect:')
-   time.sleep(1)
+while not (wlan.isconnected() and \
+    wlan.status() == network.STAT_GOT_IP):
+    print('Waiting to connect:')
+    time.sleep(1)
+
 
 print(wlan.ifconfig())
 ```
@@ -268,14 +274,15 @@ import time
 rp2.country('JP')
 
 wlan = network.WLAN(network.AP_IF)
-wlan.config(ssid='raspberry_pi_pico_w', key='password')
-wlan.ifconfig(('192.168.31.4', '255.255.255.0', '192.168.31.1', '8.8.8.8'))
+wlan.config(ssid='raspberry_pi_pico_w',
+            key='password')
+wlan.ifconfig(('192.168.31.4', '255.255.255.0',
+               '192.168.31.1', '8.8.8.8'))
 wlan.active(True)
 
 while wlan.active() == False:
    print('Waiting to active')
    time.sleep(1)
-
 print('ready')
 
 ```
@@ -324,13 +331,12 @@ sys
 
 ---
 
-## HTTPサーバーを立てたいので試しに書いてみました
+## HTTPサーバーを立てたい
 
 - socketやasyncioはあるのでパース周りが用意できればある程度のものは用意できそう
-- Raspberry Pi公式のドキュメントなどではsocketもしくはasyncで待ち受けて`/led/on`や`/led/off`が含まれていればLEDを点けたり消したりする方法が紹介されています
-- でももう少し先にいきたい気持ちになったので勢いだけで作ってみていました
+- Raspberry Pi公式のドキュメントなどではリクエストの文字列の中に`/led/on`が含まれていたらLEDを点灯`/led/off`が含まれていたらLEDを消灯する方法が紹介されていますがもう少し作り込みたい
 
-```python {monaco} {maxHeight:'400px'}
+```python
 import asyncio
 
 
@@ -404,7 +410,6 @@ class WebServer:
 web_server = WebServer(host='0.0.0.0', port=1080)
 def main():
     loop = asyncio.new_event_loop()
-    # loop.set_debug(True)
     loop.create_task(web_server.serve())
     loop.run_forever()
 
@@ -420,13 +425,13 @@ main()
     - https://micropython-docs-ja.readthedocs.io/ja/latest/library/bluetooth.html
   - aiobleモジュール
     - <https://github.com/micropython/micropython-lib/tree/master/micropython/bluetooth/aioble>
-- 今回はより高レベルなラッパーとして使いやすいaiobleモジュールを使います
+- 今回はよりラッパーとしてより使いやすいaiobleモジュールを使います
 
 ---
 
 ## aiobleモジュール
 
-- 以下のBluetooth LEで使われる一通りの機能を持っています
+- Bluetooth LEで使われる一通りの機能を持っています
   - GAP
     - Broadcaster(どのようなサービスを提供しているかを告知)
     - Observer(ブロードキャストしているCentralを探す)
@@ -437,28 +442,33 @@ main()
     - GATT Client
   - L2CAP
     - L2CAP
-- GAP(接続されるまでの処理)とGATT Server/Client(接続されてからの処理)について紹介したいです
+- aiobleのドキュメント
+  - <https://github.com/micropython/micropython-lib/blob/master/micropython/bluetooth/aioble/README.md>
+
 
 ---
 
 ## まずはObserver BLEデバイスのスキャンをしてみます
+
+- aioble.scan()すると非同期で結果が返ってきます
 
 ```python
 import aioble
 import asyncio
 
 
-async def ble_task():
+async def ble_scan_task():
    async with aioble.scan(duration_ms=5000) as scanner:
       async for result in scanner:
             print(result, result.name(), result.rssi, result.services())
 
-asyncio.run(ble_task())
+asyncio.run(ble_scan_task())
 ```
 
 ---
 
 ## Broadcaster aiobleを使って温度計サービスのブロードキャストをしてみます
+- aioble.advertise()することで自身のサービスをブロードキャストできます
 
 ```python
 import aioble
@@ -507,8 +517,7 @@ asyncio.run(instance1_task())
 
 ## Central/GATT Server 温度を自動で更新してみる
 
-- ドキュメント
-- <https://github.com/micropython/micropython-lib/blob/master/micropython/bluetooth/aioble/README.md>
+- aioble.Characteristic()に書き込むことでPeripheralへ値を送ることができます
 
 ```python
 import asyncio
@@ -532,17 +541,19 @@ temp_service = aioble.Service(_ENV_SENSE_UUID)
 temp_characteristic = aioble.Characteristic(temp_service, _ENV_SENSE_TEMP_UUID, read=True, notify=True)
 aioble.register_services(temp_service)
 
-temp_adc = machine.ADC(4)
+temp_adc = machine.ADC(4) # RP2040内蔵の温度計は5つ目のADコンバーターに接続されています
 
-def _encode_temperature(temp_deg_c):
+def _encode_tem(temp_deg_c):
     return struct.pack("<h", int(temp_deg_c * 100))
+
+def _get_temp():
+    v = (3.3/65535) * temp_adc.read_u16()
+    return 27 - (v - 0.706)/0.001721
 
 # GATTサーバーとしてCPUの温度を1秒ごとに更新する
 async def sensor_task():
     while True:
-        v = (3.3/65535) * temp_adc.read_u16()
-        t = 27 - (v - 0.706)/0.001721
-        temp_characteristic.write(_encode_temperature(t), send_update=True)
+        temp_characteristic.write(_encode_temp(_get_temp()), send_update=True)
         await asyncio.sleep_ms(1_000)
 
 async def peripheral_task():
