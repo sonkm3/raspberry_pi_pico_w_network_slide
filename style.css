@@ -1,6 +1,9 @@
 h2 {
+    display: list-item !important;
     line-style: solid !important;
     line-style-type: disc !important;
+    margin-bottom: 10px !important;
+    border-bottom: solid 1px !important;
 }
 
 .shiki {
