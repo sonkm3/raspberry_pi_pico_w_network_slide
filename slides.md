@@ -25,7 +25,7 @@ layout: center
 ## はじめに
 
 - 15分の枠での発表です
-- 概要のあと、5分のLTが二つ続くイメージで用意しています
+- 概要のあと、LTが二つ続くイメージで用意しています
 
 ---
 
@@ -33,7 +33,10 @@ layout: center
 
 - 中村草介
 - Raspberry Piもくもく会スタッフ
-- Raspberry Piもくもく会はポスターセッションでも出展しています
+- Raspberry Piもくもく会はポスターセッションにも出展しています
+  - Raspberry Pi を楽しみたい人のためのコミュニティです😊
+    - 2017年9月の第1回開催から現在まで 7年間で35回のもくもく会を開催🍓
+    - 初心者から熟練者まで老若男女問わず、和気あいあいと活動中です🍧
 
 <img src='/75330.jpeg' align='right' width='200px'/>
 
@@ -48,6 +51,11 @@ layout: center
 
 <img src='https://urbanx-tech.com/wp-content/uploads/2022/08/cropped-Logo@3x.png' align='right' width='200px'/>
 
+---
+
+## 1. 概要
+- Raspberry Pi Pico Wとは
+- MicroPythonとは
 
 ---
 layout: two-cols-header
@@ -238,7 +246,7 @@ while True:
 ---
 layout: two-cols-header
 ---
-## 2 wifi
+## 2. wifi
 
 - wifi接続はnetworkモジュールを使います
 - network.STA_IF(子機として既存のネットワークに接続する)とnetwork.AP_IF(親機として接続を受け付ける)があります
