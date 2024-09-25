@@ -583,3 +583,8 @@ asyncio.run(main())
 
 ## Peripheral/GATT Client 温度を読み出してみる
 
+---
+
+## こういう応用ができるよ、のページを追加する
+
+- あああ
