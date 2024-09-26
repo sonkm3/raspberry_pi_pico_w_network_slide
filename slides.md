@@ -26,13 +26,16 @@ layout: center
 
 - 15分の枠での発表です
 - 概要のあと、LTが二つ続くイメージで用意しています
+- 資料URL(暫定) https://nkm3.org/raspberry_pi_pico_w_network_slide/
 
 ---
 
 ## 自己紹介
 
-- 中村草介
+- 中村草介( @nakamurasousuke GitHub: sonkm3)
 - Raspberry Piもくもく会スタッフ
+
+
 - Raspberry Piもくもく会はポスターセッションにも出展しています
   - Raspberry Pi を楽しみたい人のためのコミュニティです😊
     - 2017年9月の第1回開催から現在まで 7年間で35回のもくもく会を開催🍓
@@ -41,15 +44,7 @@ layout: center
 <img src='/75330.jpeg' align='right' width='200px'/>
 
 
----
 
-## 自己紹介(お仕事の紹介)
-
-- 株式会社アーバンエックステクノロジーズ
-  - 道路など都市インフラの管理をソフトウェアでサポートするサービスを提供しています
-- ソフトウェアエンジニアのみなさま、絶賛募集中です！
-
-<img src='https://urbanx-tech.com/wp-content/uploads/2022/08/cropped-Logo@3x.png' align='right' width='200px'/>
 
 ---
 
@@ -65,12 +60,16 @@ layout: two-cols-header
 
 ::left::
 
-- RP2040(ARM Cortex-M0+ Dual Core)を搭載したワンボードマイコンで、WiFi、Bluetoothの接続機能が備わっています
+- RP2040を搭載したワンボードマイコンで、WiFi、Bluetoothの接続機能が備わっています
+  - Raspberry Pi財団が開発したARM Cortex M0+デュアルコアMPU
+    - 最高133MHzで動作
+    - RAM 256kB
+    - GPIOx30
+    - UARTx2 I2Cx2 SPIx2 PWMx16 PIOx8 12bitADCx4 USB1.1
+  - 2MBのフラッシュメモリが接続されています
   - WiFi、Bluetoothを担うInfineon CYW43439がSPIでRP2040に接続されています
-    - WiFi 802.11n(2.4 GHz Wi-Fi 4)
-    - Bluetooth® 5.2(BDR(1 Mbps)/EDR(2/3 Mbps)/Bluetooth® LE)
+    - WiFi 802.11n(2.4 GHz Wi-Fi 4) + Bluetooth® 5.2(BDR(1 Mbps)/EDR(2/3 Mbps)/Bluetooth® LE)
   - ※Linuxなどが動作するRaspberry Piとは違います
-
 
 <https://www.raspberrypi.com/documentation/microcontrollers/pico-series.html>
 
@@ -163,7 +162,7 @@ layout: two-cols-header
 ## まずはhello world(出力)しましょう
 
 - hello worldに相当するLEDの点滅
-- Arduino(C言語風のArduino言語を使ったワンボードマイコン向けの開発環境)のサンプルコードと同じような流れでLEDを点滅させることができます
+- Arduino(C言語風のArduino言語を使ったワンボードマイコン向けの統合開発環境)のサンプルコードと同じような流れでLEDを点滅させることができます
 
 ::left::
 - Arduinoのチュートリアルにあるサンプルコード
@@ -241,20 +240,24 @@ while True:
 ```
 
 ---
+
+## 2. WiFi
+
+- WiFi経由でインターネットに接続することができます
+- 使用できるモジュール
+  - ネットワークインタフェース、インターネットはnetworkモジュール
+  - トランスポート層はsocket、asyncioモジュール
+  - アプリケーション層はrequestsモジュールなど
+
+---
 layout: two-cols-header
 ---
 
-## 2. wifi
+## ネットワーク側
 
-- ネットワーク側はnetworkモジュール
-- アプリケーション側はrequestsやsocket、asyncioモジュールなど
-
----
-
-## ネットワーク層
-
-- wifi接続はnetworkモジュールを使います
+- ネットワークインタフェース、インターネット層はnetworkモジュールが相当します
 - network.STA_IF(子機として既存のネットワークに接続する)とnetwork.AP_IF(親機として接続を受け付ける)があります
+- 以下はそれぞれの初期化の手順です
 
 ::left::
 ```python
@@ -304,17 +307,7 @@ print('ready')
 
 ## アプリケーション側
 
-
----
-
-## HTTP通信について
-
-- リクエストする
-- サービスする
-
----
-
-## HTTPリクエストを送信する
+### HTTPリクエストを送信する
 
 - requestsライブラリが利用可能
 
@@ -336,7 +329,9 @@ for key in ['temperature_2m', 'wind_speed_10m']:
 
 ---
 
-## HTTPサーバーを立てたい
+## アプリケーション側
+
+### HTTPサーバーを立てたい
 
 - 添付されている標準モジュールの一覧
   - <https://docs.micropython.org/en/latest/genrst/index.html>
@@ -358,9 +353,11 @@ sys
 
 ---
 
-## HTTPサーバーを立てたい
+## アプリケーション側
 
-- socketやasyncioはあるのでパース周りが用意できればある程度のものは用意できそうなので簡単なものを作ってみます
+### HTTPサーバーを立てたい
+
+- socketやasyncioはあるのでパース周りが用意できればある程度のものは用意できそうなので簡単なものを作ってみることにしました
 
 ```python
 import asyncio
@@ -608,8 +605,20 @@ asyncio.run(main())
 
 ## Peripheral/GATT Client 温度を読み出してみる
 
+- 今回はすみません。。
+
 ---
 
 ## こういう応用ができるよ、のページを追加する
 
-- あああ
+- 
+
+---
+
+## 自己紹介(お仕事の紹介)
+
+- 株式会社アーバンエックステクノロジーズ
+  - 道路など都市インフラの管理をソフトウェアでサポートするサービスを提供しています
+- ソフトウェアエンジニアのみなさま、絶賛募集中です！
+
+<img src='https://urbanx-tech.com/wp-content/uploads/2022/08/cropped-Logo@3x.png' align='right' width='200px'/>
