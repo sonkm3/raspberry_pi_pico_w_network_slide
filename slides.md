@@ -65,11 +65,11 @@ layout: two-cols-header
 
 ::left::
 
-- Raspberry Pi PicoにWi-Fi、Bluetooth機能を追加したボードです
-  - Linuxが動作するRaspberry Piとは違います
+- RP2040(ARM Cortex-M0+ Dual Core)を搭載したワンボードマイコンで、WiFi、Bluetoothの接続機能が備わっています
   - WiFi、Bluetoothを担うInfineon CYW43439がSPIでRP2040に接続されています
     - WiFi 802.11n(2.4 GHz Wi-Fi 4)
     - Bluetooth® 5.2(BDR(1 Mbps)/EDR(2/3 Mbps)/Bluetooth® LE)
+  - ※Linuxなどが動作するRaspberry Piとは違います
 
 
 <https://www.raspberrypi.com/documentation/microcontrollers/pico-series.html>
@@ -85,13 +85,8 @@ layout: two-cols-header
 
 - Python3のサブセットで、マイクロコントローラー向けに最適化された言語です
 - 使い慣れたPythonと標準ライブラリがある程度使えます
+- <https://micropython.org>
 
-<https://micropython.org>
-
----
-
-## ライブラリ一覧
-- 添付されているライブラリの一覧
 ```python
 >>> help('modules')
 __main__          asyncio/__init__  hashlib           rp2
@@ -119,10 +114,12 @@ Plus any modules on the filesystem
 
 ## MicroPythonのインストール
 
-- uf2ファイルをダウンロード <https://micropython.org/download/RPI_PICO_W/>
-- Rasppeberry Pi Pico WのBOOTSELボタンを押しながらUSBケーブルをコンピューターに接続
-- USBストレージとして認識されるので、MicroPythonのuf2ファイルをコピーします
-- コピーが終わると自動的に再起動(アンマウント)されます
+- 専用のツール、ボードなどは使わず、USBケーブル一本で(マスストレージ経由)で書き込むことができます
+- 手順
+  1. uf2ファイルをダウンロード <https://micropython.org/download/RPI_PICO_W/>
+  2. Raspeberry Pi Pico WのBOOTSELボタンを押しながらUSBケーブルをコンピューターに接続
+  3. USBストレージとして認識されるので、MicroPythonのuf2ファイルをコピーします
+  4. コピーが終わると自動的に再起動(アンマウント)されます
 
 ---
 
@@ -155,7 +152,7 @@ Use Ctrl-] or Ctrl-x to exit this shell
 - <https://projects.raspberrypi.org/en/projects/getting-started-with-the-pico>
 - ファイル(ローカル、デバイス)、エディター、REPL、デバッグ用のペインが揃っています
 
-<img src='/thonny.png' align='right' width='400px'/>
+<img src='/thonny.png' align='center' width='400px'/>
 
 
 
@@ -163,10 +160,10 @@ Use Ctrl-] or Ctrl-x to exit this shell
 layout: two-cols-header
 ---
 
-## まずはhello worldしましょう
+## まずはhello world(出力)しましょう
 
 - hello worldに相当するLEDの点滅
-- Arduinoのサンプルコードと同じような流れでLEDを点滅させることができます
+- Arduino(C言語風のArduino言語を使ったワンボードマイコン向けの開発環境)のサンプルコードと同じような流れでLEDを点滅させることができます
 
 ::left::
 - Arduinoのチュートリアルにあるサンプルコード
@@ -219,7 +216,7 @@ timer.init(freq=2.5, mode=machine.Timer.PERIODIC, callback=lambda _: led.toggle(
 
 ---
 
-## 内蔵の温度センサの値を測ってみましょう
+## 内蔵の温度センサ(入力)の値を測ってみましょう
 
 - RP2040内蔵の温度計は5つ目のADコンバーターに接続されています
 - 以下の計算をすることでCPUの温度が求められます
@@ -246,7 +243,15 @@ while True:
 ---
 layout: two-cols-header
 ---
+
 ## 2. wifi
+
+- ネットワーク側はnetworkモジュール
+- アプリケーション側はrequestsやsocket、asyncioモジュールなど
+
+---
+
+## ネットワーク層
 
 - wifi接続はnetworkモジュールを使います
 - network.STA_IF(子機として既存のネットワークに接続する)とnetwork.AP_IF(親機として接続を受け付ける)があります
@@ -297,6 +302,18 @@ print('ready')
 
 ---
 
+## アプリケーション側
+
+
+---
+
+## HTTP通信について
+
+- リクエストする
+- サービスする
+
+---
+
 ## HTTPリクエストを送信する
 
 - requestsライブラリが利用可能
@@ -334,15 +351,16 @@ struct
 sys
 ```
 
-- urllibモジュールがないのでurllib.parseなど便利なモジュールが使えない
-- httpモジュールがないのでhttp.serverモジュールもない
+- よく使うライブラリが見当たりません！
+  - urllibモジュールがないのでurllib.parseなど便利なモジュールが使えない
+  - httpモジュールがないのでhttp.serverモジュールもない
+  - →socketやasyncioはあるのでパース周りが用意できればある程度のものは用意できそう！
 
 ---
 
 ## HTTPサーバーを立てたい
 
-- socketやasyncioはあるのでパース周りが用意できればある程度のものは用意できそう
-- Raspberry Pi公式のドキュメントなどではリクエストの文字列の中に`/led/on`が含まれていたらLEDを点灯`/led/off`が含まれていたらLEDを消灯する方法が紹介されていますがもう少し作り込みたい
+- socketやasyncioはあるのでパース周りが用意できればある程度のものは用意できそうなので簡単なものを作ってみます
 
 ```python
 import asyncio
@@ -424,6 +442,13 @@ def main():
 main()
 
 ```
+
+---
+
+## WiFiについてはここまで
+
+- WiFiは親機、子機になることができる
+- HTTPクライアントは簡単に実装できる、HTTPサーバーは少し開発が必要
 
 ---
 
