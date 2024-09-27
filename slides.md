@@ -151,7 +151,7 @@ Use Ctrl-] or Ctrl-x to exit this shell
 - <https://projects.raspberrypi.org/en/projects/getting-started-with-the-pico>
 - ファイル(ローカル、デバイス)、エディター、REPL、デバッグ用のペインが揃っています
 
-<img src='/thonny.png' align='center' width='400px'/>
+<img src='/thonny.png' align='center' width='500px'/>
 
 
 
@@ -648,11 +648,6 @@ asyncio.run(main())
 
 - 今回はすみません。。
 
----
-
-## こういう応用ができるよ、のページを追加する
-
-- 
 
 ---
 
