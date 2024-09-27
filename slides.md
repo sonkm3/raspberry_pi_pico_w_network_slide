@@ -388,7 +388,6 @@ class WebServer:
         self.host = host
         self.port = port
         self.handlers = handlers
-        print('init')
 
     def default_handler(self, method, path, request_header, query_dict={}, request_body=None):
         return b'HTTP/1.0 404 Not Found\r\n\r\nNot Found'
