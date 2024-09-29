@@ -61,7 +61,7 @@ layout: two-cols-header
 ::left::
 
 - RP2040を搭載したワンボードマイコンで、WiFi、Bluetoothの接続機能が備わっています
-  - Raspberry Pi財団が開発したARM Cortex M0+デュアルコアMPU
+  - RP2040：Raspberry Pi財団が開発したARM Cortex M0+デュアルコアMPU
     - 最高133MHzで動作
     - RAM 256kB
     - GPIOx30
@@ -119,28 +119,6 @@ Plus any modules on the filesystem
   2. Raspeberry Pi Pico WのBOOTSELボタンを押しながらUSBケーブルをコンピューターに接続
   3. USBストレージとして認識されるので、MicroPythonのuf2ファイルをコピーします
   4. コピーが終わると自動的に再起動(アンマウント)されます
-
----
-
-## mpremoteを使って動作確認
-
-- Raspberry Pi Pico W上ではMicroPythonのREPLが起動しているのでシリアルコンソールで接続することができます
-- ここではmpremoteモジュールを使って接続することにします
-  - https://pypi.org/project/mpremote/
-
-```shell
-$ pip install mpremote
-$ mpremote connect list
-/dev/cu.usbmodem101 e661385283776133 2e8a:0005 MicroPython Board in FS mode
-$ mpremote connect /dev/cu.usbmodem101
-Connected to MicroPython at /dev/cu.usbmodem101
-Use Ctrl-] or Ctrl-x to exit this shell
-
->>> import sys
->>> sys.implementation
-(name='micropython', version=(1, 23, 0, ''), _machine='Raspberry Pi Pico W with RP2040', _mpy=4870)
->>>
-```
 
 
 ---
@@ -211,32 +189,6 @@ import machine
 led = machine.Pin('LED', machine.Pin.OUT)
 timer = machine.Timer()
 timer.init(freq=2.5, mode=machine.Timer.PERIODIC, callback=lambda _: led.toggle())
-```
-
----
-
-## 内蔵の温度センサ(入力)の値を測ってみましょう
-
-- RP2040内蔵の温度計は5つ目のADコンバーターに接続されています
-- 以下の計算をすることでCPUの温度が求められます
-  - `T = 27 - (ADC_voltage - 0.706)/0.001721`
-- RP2040のデータシート566ページめに記載があります
-  - https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf
-
-```python
-import machine
-import time
-
-temp_adc = machine.ADC(4) # RP2040内蔵の温度計は5つ目のADコンバーターに接続されています
-
-def get_temperature():
-    v = (3.3/65535) * temp_adc.read_u16()
-    t = 27 - (v - 0.706)/0.001721
-    return t
-
-while True:
-    print(get_temperature())
-    time.sleep(1)
 ```
 
 ---
