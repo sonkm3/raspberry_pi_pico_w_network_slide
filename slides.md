@@ -614,7 +614,7 @@ aioble.register_services(temp_service)
 
 temp_adc = machine.ADC(4) # RP2040内蔵の温度計は5つ目のADコンバーターに接続されています
 
-def _encode_tem(temp_deg_c):
+def _encode_temp(temp_deg_c):
     return struct.pack("<h", int(temp_deg_c * 100))
 
 def _get_temp():
